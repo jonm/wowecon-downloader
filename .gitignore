@@ -102,3 +102,21 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+venv/
+*.dist-info/
+.dep
+bin/
+boto3/
+botocore/
+certifi/
+chardet/
+dateutil/
+docutils/
+idna/
+jmespath/
+requests/
+s3transfer/
+six.py
+urllib3/
+wowclient/
+*~
