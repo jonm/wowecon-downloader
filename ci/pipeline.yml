@@ -1,0 +1,81 @@
+resource_types:
+- name: pull-request
+  type: docker-image
+  source:
+    repository: teliaoss/github-pr-resource
+
+resources:
+- name: source
+  type: git
+  check_every: 24h
+  source:
+    uri: https://github.com/jonm/wowecon-downloader.git
+    branch: master
+
+- name: pr
+  type: pull-request
+  check_every: 24h
+  source:
+    repository: jonm/wowecon-downloader
+    access_token: ((github-access-token))
+    
+- name: artifacts
+  type: s3
+  source:
+    bucket: ((dest-s3-bucket))
+    regexp: wowecon-downloader/wowecon-downloader-(.*).zip
+    access_key_id: ((aws-access-key-id))
+    secret_access_key: ((aws-secret-access-key))
+    
+jobs:
+- name: validate-pr
+  plan:
+  - get: pr
+    trigger: true
+    version: every
+  - put: pr
+    params:
+      path: pr
+      status: PENDING
+  - do:
+    - task: make
+      file: pr/ci/task_make.yml
+      input_mapping: { source: pr }
+      params:
+        LAMBDA_NAME: wowecon-downloader
+    - task: verify-unique-version
+      file: pr/ci/task_verify_unique_version.yml
+      input_mapping: { source: pr }
+      params:
+        BUCKET: ((dest-s3-bucket))
+        PROJECT: wowecon-downloader
+        AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+        AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
+    on_failure:
+      put: pr
+      params:
+        path: pr
+        status: FAILURE
+  - put: pr
+    params:
+      path: pr
+      status: SUCCESS
+  
+- name: publish
+  plan:
+    - get: source
+      trigger: true
+    - task: make
+      file: source/ci/task_make.yml
+      params:
+        LAMBDA_NAME: wowecon-downloader
+    - task: verify-unique-version
+      file: source/ci/task_verify_unique_version.yml
+      params:
+        BUCKET: ((dest-s3-bucket))
+        PROJECT: wowecon-downloader
+        AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+        AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
+    - put: artifacts
+      params:
+        file: dist/wowecon-downloader-*.zip
