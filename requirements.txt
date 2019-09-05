@@ -2,4 +2,4 @@
 requests~=2.21.0
 boto3~=1.5.22
 s3transfer~=0.1.12
-wowclient==0.1.4
+wowclient==0.1.5
