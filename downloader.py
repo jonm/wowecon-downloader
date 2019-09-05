@@ -64,7 +64,7 @@ def _field_equal(src, hdr, obj, key):
 
 :type key: string
 :param key: S3 object attribute name"""
-    h = src.info().getheader(hdr)
+    h = src.info()[hdr]
     if h is None:
         return (key not in obj or obj[key] is None)
     if key not in obj: return False
@@ -84,7 +84,7 @@ def _meta_equal(src, hdr, obj, key):
 :type key: string
 :param key: name of the S3 object metadata key"""
     k = key.lower()
-    h = src.info().getheader(hdr)
+    h = src.info()[hdr]
     if h is None:
         return ('Metadata' not in obj or k not in obj['Metadata'] or
                 obj['Metadata'][k] is None)
@@ -119,16 +119,16 @@ we've already gotten it). Errs on the side of re-downloading."""
             _meta_equal(src, 'Last-Modified', obj, 'src-last-modified'))
 
 def _set_upload_arg(args, src, src_hdr, upload_arg):
-    if src.info().getheader(src_hdr) is not None:
-        args[upload_arg] = src.info().getheader(src_hdr)
+    if src.info()[src_hdr] is not None:
+        args[upload_arg] = src.info()[src_hdr]
 
 def _set_metadata(args, src):
-    if src.info().getheader('ETag') is not None:
+    if src.info()['ETag'] is not None:
         if 'Metadata' not in args: args['Metadata'] = {}
-        args['Metadata']['src-etag'] = src.info().getheader('ETag')
-    if src.info().getheader('Last-Modified') is not None:
+        args['Metadata']['src-etag'] = src.info()['ETag']
+    if src.info()['Last-Modified'] is not None:
         if 'Metadata' not in args: args['Metadata'] = {}
-        args['Metadata']['src-last-modified'] = src.info().getheader('Last-Modified')
+        args['Metadata']['src-last-modified'] = src.info()['Last-Modified']
         
 def download_url(url, s3key, s3client=None, s3bucket=None, s3region=None):
     """Downloads the given URL to the given S3 destination object.
