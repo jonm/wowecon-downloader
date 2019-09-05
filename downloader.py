@@ -16,7 +16,8 @@
 import os
 import logging
 import time
-import urllib2
+import urllib
+import urllib.request
 
 import boto3
 from botocore import session
@@ -53,7 +54,7 @@ for more details."""
 def _field_equal(src, hdr, obj, key):
     """Checks whether source has the same field value as the given S3 object.
 
-:param src: file-like object as returned by urllib2.urlopen
+:param src: file-like object as returned by urllib.request.urlopen
 
 :type hdr: string
 :param hdr: name of the HTTP header to check on the source
@@ -72,7 +73,7 @@ def _field_equal(src, hdr, obj, key):
 def _meta_equal(src, hdr, obj, key):
     """Checks whether source has the same header value as recorded in S3 object metadata.
 
-:param src: file-like object as returned by urllib2.urlopen
+:param src: file-like object as returned by urllib.request.urlopen
 
 :type hdr: string
 :param hdr: name of the HTTP header to check on the source
@@ -93,7 +94,7 @@ def _meta_equal(src, hdr, obj, key):
 def _is_up_to_date(src, s3client, s3bucket, s3key):
     """Checks whether an S3 object is up-to-date with the source.
 
-:param src: file-like object as returned by urllib2.urlopen
+:param src: file-like object as returned by urllib.request.urlopen
 
 :type client: botocore.client.S3
 :param client: S3 client
@@ -179,8 +180,8 @@ environment variable will be consulted instead."""
     
     logging.info("Checking metadata on %s..." % url)
     start = time.time()
-    req = urllib2.Request(url, headers={'Accept-Encoding': 'gzip'})
-    u = urllib2.urlopen(req)
+    req = urllib.request.Request(url, headers={'Accept-Encoding': 'gzip'})
+    u = urllib.request.urlopen(req)
     end = time.time()
     logging.info("Fetched metadata on %s (%ld ms)" %
                         (url, long((end - start) * 1000.0)))
