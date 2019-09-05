@@ -16,7 +16,7 @@
 import logging
 import os
 
-import battlenet
+from wowclient import wow
 import downloader
 
 logging.getLogger().setLevel(logging.INFO)
@@ -38,9 +38,9 @@ def _keyname_from_datetime(config, dt):
 
 def download_handler(event, context):
     config = _get_configuration()
-    wowc = battlenet.WoWCommunityAPIClient(config['wow_client_id'],
-                                           config['wow_client_secret'],
-                                           endpoint=config['wow_api_endpoint'])
+    wowc = wow.WoWCommunityAPIClient(config['wow_client_id'],
+                                     config['wow_client_secret'],
+                                     endpoint=config['wow_api_endpoint'])
     for batch in wowc.get_auction_data_status(config['wow_realm'],
                                               config['wow_locale']):
         s3key = _keyname_from_datetime(config, batch.last_modified)
