@@ -169,14 +169,14 @@ environment variable will be consulted instead."""
         s3c.head_bucket(Bucket=s3bucket)
         end = time.time()
         logging.info("Bucket %s exists (%ld ms)" %
-                            (s3bucket, long((end - start) * 1000.0)))
+                            (s3bucket, int((end - start) * 1000.0)))
     except ClientError as e:
         logging.info("Creating bucket %s..." % s3bucket)
         start = time.time()
         s3c.create_bucket(Bucket=s3bucket)
         end = time.time()
         logging.info("Created bucket %s (%ld ms)" %
-                            (s3bucket, long((end - start) * 1000.0)))
+                            (s3bucket, int((end - start) * 1000.0)))
     
     logging.info("Checking metadata on %s..." % url)
     start = time.time()
@@ -184,7 +184,7 @@ environment variable will be consulted instead."""
     u = urllib.request.urlopen(req)
     end = time.time()
     logging.info("Fetched metadata on %s (%ld ms)" %
-                        (url, long((end - start) * 1000.0)))
+                        (url, int((end - start) * 1000.0)))
 
     if _is_up_to_date(u, s3c, s3bucket, s3key):
         u.close()
@@ -206,4 +206,4 @@ environment variable will be consulted instead."""
     end = time.time()
     logging.info("Download of %s to s3://%s/%s complete (%ld ms)" %
                         (url, s3bucket, s3key,
-                         long((end - start) * 1000.0)))
+                         int((end - start) * 1000.0)))
