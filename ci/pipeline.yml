@@ -37,7 +37,6 @@ jobs:
 - name: validate-pr
   plan:
   - get: pr
-    trigger: true
     version: every
   - get: s3pypi-ci
   - put: pr
@@ -73,7 +72,6 @@ jobs:
 - name: deploy
   plan:
     - get: source
-      trigger: true
     - get: s3pypi-ci
     - task: make
       file: source/ci/task_make.yml
@@ -97,3 +95,5 @@ jobs:
       params:
         function_name: wowecon-downloader
         s3_bucket: ((dest-s3-bucket))
+        region: ((aws-region))
+

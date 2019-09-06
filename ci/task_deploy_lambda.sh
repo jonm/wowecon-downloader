@@ -17,4 +17,5 @@ s3_key="${function_name}/${function_name}-${VERSION}.zip"
 echo "Deploying lambda s3://${s3_bucket}/${s3_key}..."
 
 aws lambda update-function-code --function-name $function_name \
-    --s3-bucket $s3_bucket --s3-key $s3_key
+    --s3-bucket $s3_bucket --s3-key $s3_key --region $region
+

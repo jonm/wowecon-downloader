@@ -12,6 +12,7 @@ inputs:
 params:
   function_name:
   s3_bucket:
+  region: us-east-1
   
 run:
   dir: source
