@@ -93,7 +93,7 @@ jobs:
       file: source/ci/task_deploy_lambda.yml
       image: s3pypi-ci
       params:
-        function_name: wowecon-downloader
+        function_name: wowecon_downloader
         s3_bucket: ((dest-s3-bucket))
         region: ((aws-region))
         AWS_ACCESS_KEY_ID: ((aws-access-key-id))
