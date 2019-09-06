@@ -96,4 +96,6 @@ jobs:
         function_name: wowecon-downloader
         s3_bucket: ((dest-s3-bucket))
         region: ((aws-region))
-
+        AWS_ACCESS_KEY_ID: ((aws-access-key-id))
+        AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
+        

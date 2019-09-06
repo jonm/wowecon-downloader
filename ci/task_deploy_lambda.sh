@@ -8,8 +8,19 @@ if [ -z "$function_name" ]; then
     echo "Please specify param `function_name`"
     exit 1
 fi
+
 if [ -z "$s3_bucket" ]; then
     echo "Please specify param `s3_bucket`"
+    exit 1
+fi
+
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+    echo "Missing input AWS_ACCESS_KEY_ID"
+    exit 1
+fi
+
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "Missing input AWS_SECRET_ACCESS_KEY"
     exit 1
 fi
 
