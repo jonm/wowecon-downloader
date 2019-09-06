@@ -26,6 +26,12 @@ resources:
     regexp: wowecon-downloader/wowecon-downloader-(.*).zip
     access_key_id: ((aws-access-key-id))
     secret_access_key: ((aws-secret-access-key))
+
+- name: s3pypi-ci
+  type: docker-image
+  check_every: 24h
+  source:
+    repository: jonm33/s3pypi-ci
     
 jobs:
 - name: validate-pr
@@ -33,24 +39,27 @@ jobs:
   - get: pr
     trigger: true
     version: every
+  - get: s3pypi-ci
   - put: pr
     params:
       path: pr
       status: PENDING
   - do:
-    - task: make
-      file: pr/ci/task_make.yml
-      input_mapping: { source: pr }
-      params:
-        LAMBDA_NAME: wowecon-downloader
     - task: verify-unique-version
       file: pr/ci/task_verify_unique_version.yml
+      image: s3pypi-ci
       input_mapping: { source: pr }
       params:
         BUCKET: ((dest-s3-bucket))
         PROJECT: wowecon-downloader
         AWS_ACCESS_KEY_ID: ((aws-access-key-id))
         AWS_SECRET_ACCESS_KEY: ((aws-secret-access-key))
+    - task: make
+      file: pr/ci/task_make.yml
+      image: s3pypi-ci
+      input_mapping: { source: pr }
+      params:
+        LAMBDA_NAME: wowecon-downloader
     on_failure:
       put: pr
       params:
@@ -61,16 +70,19 @@ jobs:
       path: pr
       status: SUCCESS
   
-- name: publish
+- name: deploy
   plan:
     - get: source
       trigger: true
+    - get: s3pypi-ci
     - task: make
       file: source/ci/task_make.yml
+      image: s3pypi-ci
       params:
         LAMBDA_NAME: wowecon-downloader
     - task: verify-unique-version
       file: source/ci/task_verify_unique_version.yml
+      image: s3pypi-ci
       params:
         BUCKET: ((dest-s3-bucket))
         PROJECT: wowecon-downloader
@@ -79,3 +91,9 @@ jobs:
     - put: artifacts
       params:
         file: dist/wowecon-downloader-*.zip
+    - task: deploy
+      file: source/ci/task_deploy_lambda.yml
+      image: s3pypi-ci
+      params:
+        function_name: wowecon-downloader
+        s3_bucket: ((dest-s3-bucket))
