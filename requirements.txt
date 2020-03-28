@@ -1,5 +1,6 @@
 --extra-index-url https://dya5xuc6t4o21.cloudfront.net/
 requests~=2.22
 s3transfer~=0.1
-wowclient~=1.0
+wowclient~=1.1
+
 
